@@ -1,8 +1,8 @@
-# @seneca/refer
+# @seneca/doc-spider
 
-> _Seneca Refer_ is a plugin for [Seneca](http://senecajs.org)
+> _Seneca Doc Spider_ is a plugin for [Seneca](http://senecajs.org)
 
-    User referral business logic plugin for the Seneca platform.
+    Document spider plugin for the Seneca platform.
 
 [![npm version](https://img.shields.io/npm/v/@seneca/refer.svg)](https://npmjs.com/package/@seneca/refer)
 [![build](https://github.com/senecajs/seneca-refer/actions/workflows/build.yml/badge.svg)](https://github.com/senecajs/seneca-refer/actions/workflows/build.yml)
