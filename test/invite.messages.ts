@@ -2,7 +2,7 @@
 
 export default {
   print: false,
-  pattern: 'biz:refer',
+  pattern: 'biz:docspider',
   allow: { missing: true },
 
   calls: [
@@ -35,30 +35,30 @@ export default {
       pattern: 'accept:entry',
       params: {
         check: true,
-        code: '`create-infinite-code:out.entry.code`'
+        code: '`create-infinite-code:out.entry.code`',
       },
       out: {
         ok: true,
         entry: {
           id: '`create-infinite-code:out.entry.id`',
-          count: 0
-        }
-      }
+          count: 0,
+        },
+      },
     },
 
     {
       name: 'accept-infinite-1',
       pattern: 'accept:entry',
       params: {
-        code: '`create-infinite-code:out.entry.code`'
+        code: '`create-infinite-code:out.entry.code`',
       },
       out: {
         ok: true,
         entry: {
           id: '`create-infinite-code:out.entry.id`',
-          count: 1
-        }
-      }
+          count: 1,
+        },
+      },
     },
 
     {
@@ -66,36 +66,36 @@ export default {
       pattern: 'accept:entry',
       params: {
         code: '`create-infinite-code:out.entry.code`',
-        user_id: 'u01'
+        user_id: 'u01',
       },
       out: {
         ok: true,
         entry: {
           id: '`create-infinite-code:out.entry.id`',
-          count: 2
+          count: 2,
         },
         occur: {
-          user_id: 'u01'
-        }
-      }
+          user_id: 'u01',
+        },
+      },
     },
 
     {
       name: 'accept-infinite-3',
       pattern: 'accept:entry',
       params: {
-        code: '`create-infinite-code:out.entry.code`'
+        code: '`create-infinite-code:out.entry.code`',
       },
       out: {
         ok: true,
         entry: {
           id: '`create-infinite-code:out.entry.id`',
-          count: 3
+          count: 3,
         },
         occur: {
-          entry_kind: 'standard'
-        }
-      }
+          entry_kind: 'standard',
+        },
+      },
     },
 
     {
@@ -104,8 +104,8 @@ export default {
       params: {
         occur_id: '`accept-infinite-3:out.occur.id`',
         occur: {
-          user_id: 'u02'
-        }
+          user_id: 'u02',
+        },
       },
       out: {
         ok: true,
@@ -113,9 +113,9 @@ export default {
           id: '`accept-infinite-3:out.occur.id`',
           code: '`accept-infinite-3:out.occur.code`',
           entry_kind: 'standard',
-          user_id: 'u02'
-        }
-      }
+          user_id: 'u02',
+        },
+      },
     },
 
     // Limit 2
@@ -145,42 +145,43 @@ export default {
       name: 'accept-limit-1',
       pattern: 'accept:entry',
       params: {
-        code: '`create-limit-code:out.entry.code`'
+        code: '`create-limit-code:out.entry.code`',
       },
       out: {
         ok: true,
         entry: {
           id: '`create-limit-code:out.entry.id`',
-          count: 1
-        }
-      }
+          count: 1,
+        },
+      },
     },
 
     {
       name: 'accept-limit-2',
       pattern: 'accept:entry',
       params: {
-        code: '`create-limit-code:out.entry.code`'
+        code: '`create-limit-code:out.entry.code`',
       },
       out: {
         ok: true,
         entry: {
           id: '`create-limit-code:out.entry.id`',
-          count: 2
-        }
-      }
+          count: 2,
+        },
+      },
     },
 
     {
       name: 'accept-limit-3',
       pattern: 'accept:entry',
       params: {
-        code: '`create-limit-code:out.entry.code`'
+        code: '`create-limit-code:out.entry.code`',
       },
       out: {
-        ok: false, why: 'entry-limit', details: { limit: 2, accepts: 2 }
-      }
+        ok: false,
+        why: 'entry-limit',
+        details: { limit: 2, accepts: 2 },
+      },
     },
-
   ],
 }

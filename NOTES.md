@@ -23,38 +23,38 @@ Assumes fields:
 
 - id
 
-### refer/entry
+### doc-spider/entry
 
 The main table.
 A referral from a user to an invitee.
 
 Does _not_ store state. To allow for more flexible business rules, referral "state" is
-determined by child rows in refer/occur
+determined by child rows in doc-spider/occur
 
-Parent: refer/point
-Child: refer/occur
+Parent: doc-spider/point
+Child: doc-spider/occur
 
-### refer/occur
+### doc-spider/occur
 
-An event in the referal process. Used instead of a single "state" on refer/entry
+An event in the referal process. Used instead of a single "state" on doc-spider/entry
 Not called "event" to avoid conflicts.
 
 Triggers various external actions - sending email, rewards etc.
 
-Parent: refer/entry
+Parent: doc-spider/entry
 
-### refer/rule
+### doc-spider/rule
 
-Defined action triggers for rows in refer/occur
+Defined action triggers for rows in doc-spider/occur
 Actual actions are app specific - encoded by messages
 
-### refer/reward
+### doc-spider/reward
 
 Track user "rewards" wrt referrals, such as # of referrals, kind of "points"
 
-### refer/point
+### doc-spider/point
 
 Referral entry point; link or code; many inbound users
 Vanity urls, etc.
 
-Child: refer/entry
+Child: doc-spider/entry

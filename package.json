@@ -1,19 +1,19 @@
 {
-  "name": "@seneca/refer",
-  "version": "0.6.0",
-  "main": "dist/refer.js",
+  "name": "@seneca/doc-spider",
+  "version": "0.0.1",
+  "main": "dist/doc-spider.js",
   "type": "commonjs",
-  "types": "dist/refer.d.ts",
+  "types": "dist/doc-spider.d.ts",
   "description": "User Referral business logic plugin for the Seneca platform.",
-  "homepage": "https://github.com/senecajs/seneca-refer",
+  "homepage": "https://github.com/senecajs/seneca-doc-spider",
   "keywords": [
     "seneca",
-    "refer"
+    "doc-spider"
   ],
-  "author": "Richard Rodger - richardrodger.com",
+  "author": "Ríona Stokes - https://github.com/rionastokes",
   "repository": {
     "type": "git",
-    "url": "git://github.com/senecajs/seneca-refer.git"
+    "url": "git://github.com/senecajs/seneca-doc-spider.git"
   },
   "scripts": {
     "prettier": "prettier --write .",

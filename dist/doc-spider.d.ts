@@ -1,4 +1,4 @@
-declare type ReferOptions = {
+type ReferOptions = {
     debug?: boolean;
     token: {
         len?: number;
@@ -9,10 +9,10 @@ declare type ReferOptions = {
         alphabet?: string;
     };
 };
-declare function refer(this: any, options: ReferOptions): {
+declare function docspider(this: any, options: ReferOptions): {
     exports: {
         genToken: any;
         genCode: any;
     };
 };
-export default refer;
+export default docspider;

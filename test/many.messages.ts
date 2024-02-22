@@ -1,11 +1,11 @@
 export default {
   print: false,
-  pattern: 'biz:refer',
+  pattern: 'biz:docspider',
   allow: { missing: true },
   calls: [
     {
       name: 'create-multiple',
-      pattern: 'create:entry', // call { biz:refer, create:entry, ...params }
+      pattern: 'create:entry', // call { biz:docspider, create:entry, ...params }
       params: {
         user_id: 'u01',
         kind: 'standard', // avoid using 'type', 'kind' has fewer conflicts
@@ -29,7 +29,7 @@ export default {
 
     {
       name: 'create-multiple2',
-      pattern: 'create:entry', // call { biz:refer, create:entry, ...params }
+      pattern: 'create:entry', // call { biz:docspider, create:entry, ...params }
       params: {
         user_id: 'u02',
         kind: 'standard', // avoid using 'type', 'kind' has fewer conflicts
@@ -53,7 +53,7 @@ export default {
 
     {
       name: 'create-multiple3',
-      pattern: 'create:entry', // call { biz:refer, create:entry, ...params }
+      pattern: 'create:entry', // call { biz:docspider, create:entry, ...params }
       params: {
         user_id: 'u03',
         kind: 'standard', // avoid using 'type', 'kind' has fewer conflicts
@@ -75,9 +75,9 @@ export default {
       },
     },
 
-    // Validate that all refer/entry exists and are correct
+    // Validate that all docspider/entry exists and are correct
     {
-      pattern: 'biz:null,role:entity,base:refer,name:entry,cmd:list',
+      pattern: 'biz:null,role:entity,base:docspider,name:entry,cmd:list',
       out: [
         {
           id: '`create-multiple:out.entry.id`',
@@ -100,9 +100,9 @@ export default {
       ],
     },
 
-    // Validate that all refer/occur exists and are correct
+    // Validate that all docspider/occur exists and are correct
     {
-      pattern: 'biz:null,role:entity,base:refer,name:occur,cmd:list',
+      pattern: 'biz:null,role:entity,base:docspider,name:occur,cmd:list',
       out: [
         {
           id: '`create-multiple:out.occur.id`',
@@ -135,19 +135,19 @@ export default {
         {
           toaddr: 'alice@example.com',
           fromaddr: 'invite@example.com',
-          kind: 'refer',
+          kind: 'docspider',
           code: 'invite',
         },
         {
           toaddr: 'johndoe@example.com',
           fromaddr: 'invite@example.com',
-          kind: 'refer',
+          kind: 'docspider',
           code: 'invite',
         },
         {
           toaddr: 'foo@example.com',
           fromaddr: 'invite@example.com',
-          kind: 'refer',
+          kind: 'docspider',
           code: 'invite',
         },
       ],
@@ -226,9 +226,9 @@ export default {
       },
     },
 
-    // Validate new refer/occur records
+    // Validate new docspider/occur records
     {
-      pattern: 'biz:null,role:entity,base:refer,name:occur,cmd:list',
+      pattern: 'biz:null,role:entity,base:docspider,name:occur,cmd:list',
       params: { q: { kind: 'accept' } },
       out: [
         {
@@ -255,9 +255,9 @@ export default {
       ],
     },
 
-    // Validate new all refer/reward updated
+    // Validate new all docspider/reward updated
     {
-      pattern: 'biz:null,role:entity,base:refer,name:reward,cmd:list',
+      pattern: 'biz:null,role:entity,base:docspider,name:reward,cmd:list',
       out: [
         {
           entry_id: '`create-multiple:out.entry.id`',

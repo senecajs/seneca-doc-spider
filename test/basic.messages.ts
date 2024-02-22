@@ -2,20 +2,20 @@
 
 export default {
   print: false,
-  pattern: 'biz:refer',
+  pattern: 'biz:docspider',
   allow: { missing: true },
 
   calls: [
     // User with id=u01 sends referal to friend alice@example.com
     // Creating:
-    //   - refer/entry referral record
-    //   - refer/occur event record
+    //   - docspider/entry referral record
+    //   - docspider/occur event record
     //   - sent email to alice@example.com (mock/email record)
     // Email sending to be implemented with @seneca/mail later
     // NOTE: implementation is just hard-coded!
     {
       name: 'create-alice',
-      pattern: 'create:entry', // call { biz:refer, create:entry, ...params }
+      pattern: 'create:entry', // call { biz:docspider, create:entry, ...params }
       params: {
         user_id: 'u01',
         kind: 'standard', // avoid using 'type', 'kind' has fewer conflicts
@@ -33,16 +33,16 @@ export default {
           entry_kind: 'standard',
           kind: 'create',
           email: 'alice@example.com',
-        }
+        },
       },
     },
 
     // Print entire database
     // { print: true, pattern: 'biz:null,role:mem-store,cmd:dump' },
 
-    // Validate the refer/entry exists and is correct
+    // Validate the docspider/entry exists and is correct
     {
-      pattern: 'biz:null,role:entity,base:refer,name:entry,cmd:list',
+      pattern: 'biz:null,role:entity,base:docspider,name:entry,cmd:list',
       out: [
         {
           id: '`create-alice:out.entry.id`',
@@ -53,9 +53,9 @@ export default {
       ],
     },
 
-    // Validate the refer/occur exists and is correct
+    // Validate the docspider/occur exists and is correct
     {
-      pattern: 'biz:null,role:entity,base:refer,name:occur,cmd:list',
+      pattern: 'biz:null,role:entity,base:docspider,name:occur,cmd:list',
       out: [
         {
           // back references, see: https://github.com/rjrodger/inks
@@ -76,7 +76,7 @@ export default {
         {
           toaddr: 'alice@example.com',
           fromaddr: 'invite@example.com',
-          kind: 'refer',
+          kind: 'docspider',
           code: 'invite',
         },
       ],
@@ -107,9 +107,9 @@ export default {
       },
     },
 
-    // Validate new refer/occur record
+    // Validate new docspider/occur record
     {
-      pattern: 'biz:null,role:entity,base:refer,name:occur,cmd:load',
+      pattern: 'biz:null,role:entity,base:docspider,name:occur,cmd:load',
       params: { q: { kind: 'accept' } },
       out: {
         entry_kind: 'standard',
@@ -120,9 +120,9 @@ export default {
       },
     },
 
-    // Validate new refer/reward updated
+    // Validate new docspider/reward updated
     {
-      pattern: 'biz:null,role:entity,base:refer,name:reward,cmd:load',
+      pattern: 'biz:null,role:entity,base:docspider,name:reward,cmd:load',
       params: {
         q: {
           entry_id: '`create-alice:out.entry.id`',

@@ -4,70 +4,62 @@ import Seneca from 'seneca'
 import SenecaMsgTest from 'seneca-msg-test'
 // import { Maintain } from '@seneca/maintain'
 
-import ReferDoc from '../src/refer-doc'
-import Refer from '../src/refer'
+import DocspiderDoc from '../src/doc-spider-doc'
+import Docspider from '../src/doc-spider'
 
 import BasicMessages from './basic.messages'
 import ManyMessages from './many.messages'
 import ConflictMessages from './conflict.messages'
 import InviteMessages from './invite.messages'
 
-
-describe('refer', () => {
+describe('docspider', () => {
   test('happy', async () => {
-    expect(ReferDoc).toBeDefined()
+    expect(DocspiderDoc).toBeDefined()
     const seneca = Seneca({ legacy: false })
       .test()
       .use('promisify')
       .use('entity')
-      .use(Refer)
+      .use(Docspider)
     await seneca.ready()
   })
-
 
   test('gen', async () => {
     const seneca = Seneca({ legacy: false })
       .test()
       .use('promisify')
       .use('entity')
-      .use(Refer)
+      .use(Docspider)
     await seneca.ready()
 
-    let genToken = seneca.export('refer/genToken')
-    let genCode = seneca.export('refer/genCode')
+    let genToken = seneca.export('docspider/genToken')
+    let genCode = seneca.export('docspider/genCode')
 
     expect(genToken().length).toEqual(16)
     expect(genCode().length).toEqual(6)
   })
-
 
   test('basic.messages', async () => {
     const seneca = await makeSeneca()
     await SenecaMsgTest(seneca, BasicMessages)()
   })
 
-
   test('many.messages', async () => {
     const seneca = await makeSeneca()
     await SenecaMsgTest(seneca, ManyMessages)()
   })
-
 
   test('conflict.messages', async () => {
     const seneca = await makeSeneca()
     await SenecaMsgTest(seneca, ConflictMessages)()
   })
 
-
   test('invite.messages', async () => {
     const seneca = await makeSeneca()
     await SenecaMsgTest(seneca, InviteMessages)()
   })
 
-
   // test('maintain', Maintain)
 })
-
 
 async function makeSeneca() {
   const seneca = Seneca({ legacy: false })
@@ -78,7 +70,7 @@ async function makeSeneca() {
 
   await makeBasicRules(seneca)
 
-  seneca.use(Refer)
+  seneca.use(Docspider)
 
   await makeMockActions(seneca)
 
@@ -91,8 +83,8 @@ async function makeSeneca() {
 }
 
 async function makeBasicRules(seneca: any) {
-  await seneca.entity('refer/rule').save$({
-    ent: 'refer/occur',
+  await seneca.entity('docspider/rule').save$({
+    ent: 'docspider/occur',
     cmd: 'save',
     where: { kind: 'create' },
     call: [
@@ -103,13 +95,13 @@ async function makeBasicRules(seneca: any) {
         subject: '`config:sender.invite.subject`',
         toaddr: '`occur:sender.invite.subject`',
         code: 'invite',
-        kind: 'refer',
+        kind: 'docspider',
       },
     ],
   })
 
-  await seneca.entity('refer/rule').save$({
-    ent: 'refer/occur',
+  await seneca.entity('docspider/rule').save$({
+    ent: 'docspider/occur',
     cmd: 'save',
     where: { kind: 'accept' },
     call: [
@@ -118,26 +110,26 @@ async function makeBasicRules(seneca: any) {
         award: 'incr',
         field: 'count',
         give: 'award',
-        biz: 'refer',
+        biz: 'docspider',
       },
     ],
   })
 
-  await seneca.entity('refer/rule').save$({
-    ent: 'refer/occur',
+  await seneca.entity('docspider/rule').save$({
+    ent: 'docspider/occur',
     cmd: 'save',
     where: { kind: 'lost' },
     call: [
       {
         lost: 'entry',
-        biz: 'refer',
+        biz: 'docspider',
       },
     ],
   })
 }
 
 async function makeMockActions(seneca: any) {
-  seneca.message('sys:email,send:email', async function(this: any, msg: any) {
+  seneca.message('sys:email,send:email', async function (this: any, msg: any) {
     this.entity('mock/email').save$({
       toaddr: msg.toaddr,
       fromaddr: msg.fromaddr,

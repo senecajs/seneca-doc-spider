@@ -1,6 +1,5 @@
 /* Copyright © 2022 Seneca Project Contributors, MIT License. */
 
-
 type ReferOptions = {
   debug?: boolean
   token: {
@@ -13,16 +12,14 @@ type ReferOptions = {
   }
 }
 
-
-function refer(this: any, options: ReferOptions) {
+function docspider(this: any, options: ReferOptions) {
   const seneca: any = this
 
   const genToken = this.util.Nid(options.token)
   const genCode = this.util.Nid(options.code)
 
-
   seneca
-    .fix('biz:refer')
+    .fix('biz:docspider')
     .message('create:entry', msgCreateEntry)
     .message('accept:entry', msgAcceptEntry)
     .message('update:occur', msgUpdateOccur)
@@ -35,9 +32,7 @@ function refer(this: any, options: ReferOptions) {
     .message('load:rules', msgLoadRules)
 
   // TODO: seneca.prepare should not be affected by seneca.fix
-  seneca
-    .prepare(prepare)
-
+  seneca.prepare(prepare)
 
   async function msgCreateEntry(this: any, msg: any) {
     const seneca = this
@@ -59,9 +54,8 @@ function refer(this: any, options: ReferOptions) {
 
     let active = null == msg.active ? true : !!msg.active
 
-    let EntryEnt = seneca.entity('refer/entry')
-    let OccurEnt = seneca.entity('refer/occur')
-
+    let EntryEnt = seneca.entity('docspider/entry')
+    let OccurEnt = seneca.entity('docspider/occur')
 
     // Check single use email referral used only once
     if ('email' === method && 'single' === mode) {
@@ -82,12 +76,11 @@ function refer(this: any, options: ReferOptions) {
           ok: false,
           why: 'entry-exists',
           details: {
-            email
-          }
+            email,
+          },
         }
       }
     }
-
 
     const entry = await EntryEnt.save$({
       user_id,
@@ -109,7 +102,6 @@ function refer(this: any, options: ReferOptions) {
 
       active,
     })
-
 
     let occur
 
@@ -137,7 +129,6 @@ function refer(this: any, options: ReferOptions) {
     }
   }
 
-
   async function msgAcceptEntry(this: any, msg: any) {
     const seneca = this
 
@@ -154,19 +145,16 @@ function refer(this: any, options: ReferOptions) {
 
     if (msg.token) {
       q.token = msg.token
-    }
-    else if (msg.code) {
+    } else if (msg.code) {
       q.code = msg.code
-    }
-    else {
+    } else {
       return {
         ok: false,
-        why: 'no-token-or-code'
+        why: 'no-token-or-code',
       }
     }
 
-
-    const entry = await seneca.entity('refer/entry').load$(q)
+    const entry = await seneca.entity('docspider/entry').load$(q)
 
     if (!entry) {
       return {
@@ -175,7 +163,7 @@ function refer(this: any, options: ReferOptions) {
         details: {
           token,
           code,
-        }
+        },
       }
     }
 
@@ -186,9 +174,9 @@ function refer(this: any, options: ReferOptions) {
       }
     }
 
-    let occurs = await this.entity('refer/occur').list$({
+    let occurs = await this.entity('docspider/occur').list$({
       entry_id: entry.id,
-      fields$: ['kind']
+      fields$: ['kind'],
     })
 
     let isLost = occurs.find((occur: any) => 'lost' === occur.kind)
@@ -200,30 +188,28 @@ function refer(this: any, options: ReferOptions) {
       }
     }
 
-
     let accepts = occurs.filter((occur: any) => 'accept' === occur.kind)
 
-    if (('single' === entry.mode || 1 === entry.limit) && (1 <= accepts)) {
+    if (('single' === entry.mode || 1 === entry.limit) && 1 <= accepts) {
       return {
         ok: false,
         why: 'entry-used',
       }
-    }
-    else if (0 < entry.limit && entry.limit <= accepts.length) {
+    } else if (0 < entry.limit && entry.limit <= accepts.length) {
       return {
         ok: false,
         why: 'entry-limit',
         details: {
           limit: entry.limit,
           accepts: accepts.length,
-        }
+        },
       }
     }
 
     let occur
 
     if (!check) {
-      occur = await seneca.entity('refer/occur').save$({
+      occur = await seneca.entity('docspider/occur').save$({
         user_id,
         entry_kind: entry.kind,
         email: entry.email,
@@ -244,8 +230,6 @@ function refer(this: any, options: ReferOptions) {
     }
   }
 
-
-
   async function msgUpdateOccur(this: any, msg: any) {
     const seneca = this
 
@@ -260,12 +244,12 @@ function refer(this: any, options: ReferOptions) {
       q.id = occur_id
     }
 
-    let occur = await seneca.entity('refer/occur').load$(q)
+    let occur = await seneca.entity('docspider/occur').load$(q)
 
     if (!occur) {
       return {
         ok: false,
-        why: 'not-found'
+        why: 'not-found',
       }
     }
 
@@ -279,7 +263,6 @@ function refer(this: any, options: ReferOptions) {
     }
   }
 
-
   async function msgUpdateEntry(this: any, msg: any) {
     const seneca = this
 
@@ -287,12 +270,12 @@ function refer(this: any, options: ReferOptions) {
 
     let active = msg.active
 
-    let entry = seneca.entity('refer/entry').load$(entry_id)
+    let entry = seneca.entity('docspider/entry').load$(entry_id)
 
     if (!entry) {
       return {
         ok: false,
-        why: 'not-found'
+        why: 'not-found',
       }
     }
 
@@ -307,23 +290,22 @@ function refer(this: any, options: ReferOptions) {
     }
   }
 
-
   async function msgLoadEntry(this: any, msg: any) {
     const seneca = this
 
     let entry_id = msg.entry_id
 
-    let entry = seneca.entity('refer/entry').load$(entry_id)
+    let entry = seneca.entity('docspider/entry').load$(entry_id)
 
     if (!entry) {
       return {
         ok: false,
-        why: 'not-found'
+        why: 'not-found',
       }
     }
 
-    let occurs = seneca.entity('refer/occur').list$({
-      entry_id: entry.id
+    let occurs = seneca.entity('docspider/occur').list$({
+      entry_id: entry.id,
     })
 
     return {
@@ -333,9 +315,8 @@ function refer(this: any, options: ReferOptions) {
     }
   }
 
-
   // Create if not exists, otherwise return match
-  // Most useful for mode=multi 
+  // Most useful for mode=multi
   async function msgEnsureEntry(this: any, msg: any) {
     const seneca = this
 
@@ -343,7 +324,7 @@ function refer(this: any, options: ReferOptions) {
     let kind = msg.kind || 'standard'
     let peg = msg.peg
 
-    let entry = await seneca.entity('refer/entry').load$({
+    let entry = await seneca.entity('docspider/entry').load$({
       user_id,
       kind,
       peg,
@@ -355,8 +336,7 @@ function refer(this: any, options: ReferOptions) {
       let createMsg = { ...msg, create: 'entry' }
       delete createMsg.ensure
       out = await seneca.post(createMsg)
-    }
-    else {
+    } else {
       out = {
         ok: true,
         entry,
@@ -367,12 +347,10 @@ function refer(this: any, options: ReferOptions) {
     return out
   }
 
-
-
   async function msgLostEntry(this: any, msg: any) {
     const seneca = this
 
-    const occurList = await seneca.entity('refer/occur').list$({
+    const occurList = await seneca.entity('docspider/occur').list$({
       email: msg.email,
       kind: 'create',
     })
@@ -382,7 +360,7 @@ function refer(this: any, options: ReferOptions) {
     )
 
     for (let i = 0; i < unacceptedReferrals.length; i++) {
-      await seneca.entity('refer/occur').save$({
+      await seneca.entity('docspider/occur').save$({
         user_id: unacceptedReferrals[i].user_id,
         entry_kind: unacceptedReferrals[i].entry_kind,
         email: msg.email,
@@ -395,24 +373,23 @@ function refer(this: any, options: ReferOptions) {
   async function msgRewardEntry(this: any, msg: any) {
     const seneca = this
 
-    const entry = await seneca.entity('refer/occur').load$({
+    const entry = await seneca.entity('docspider/occur').load$({
       entry_id: msg.entry_id,
     })
 
     if (!entry) {
       return {
         ok: false,
-        why: 'unknown-entry'
+        why: 'unknown-entry',
       }
     }
 
-
-    let reward = await this.entity('refer/reward').load$({
+    let reward = await this.entity('docspider/reward').load$({
       entry_id: entry.id,
     })
 
     if (!reward) {
-      reward = seneca.make('refer/reward', {
+      reward = seneca.make('docspider/reward', {
         entry_id: msg.entry_id,
         entry_kind: msg.entry_kind,
         kind: msg.kind,
@@ -426,11 +403,10 @@ function refer(this: any, options: ReferOptions) {
     await reward.save$()
   }
 
-
   async function msgLoadRules(this: any, msg: any) {
     const seneca = this
 
-    const rules = await seneca.entity('refer/rule').list$()
+    const rules = await seneca.entity('docspider/rule').list$()
 
     // TODO: handle rule updates?
     // TODO: create a @seneca/rule plugin? later!
@@ -438,7 +414,7 @@ function refer(this: any, options: ReferOptions) {
     for (let rule of rules) {
       if (rule.ent) {
         const subpat = generateSubPat(seneca, rule)
-        seneca.sub(subpat, function(this: any, msg: any) {
+        seneca.sub(subpat, function (this: any, msg: any) {
           if (rule.where.kind === 'create') {
             rule.call.forEach((callmsg: any) => {
               // TODO: use https://github.com/rjrodger/inks
@@ -450,7 +426,7 @@ function refer(this: any, options: ReferOptions) {
           }
         })
 
-        seneca.sub(subpat, function(this: any, msg: any) {
+        seneca.sub(subpat, function (this: any, msg: any) {
           if (rule.where.kind === 'accept') {
             rule.call.forEach((callmsg: any) => {
               callmsg.ent = seneca.entity(rule.ent)
@@ -462,7 +438,7 @@ function refer(this: any, options: ReferOptions) {
           }
         })
 
-        seneca.sub(subpat, function(this: any, msg: any) {
+        seneca.sub(subpat, function (this: any, msg: any) {
           if (rule.where.kind === 'lost' && msg.q.kind === 'accept') {
             rule.call.forEach((callmsg: any) => {
               callmsg.ent = seneca.entity(rule.ent)
@@ -477,12 +453,10 @@ function refer(this: any, options: ReferOptions) {
     }
   }
 
-
   async function prepare(this: any) {
     const seneca = this
-    await seneca.post('biz:refer,load:rules')
+    await seneca.post('biz:docspider,load:rules')
   }
-
 
   function generateSubPat(seneca: any, rule: any): object {
     const ent = seneca.entity(rule.ent)
@@ -502,15 +476,13 @@ function refer(this: any, options: ReferOptions) {
     }
   }
 
-
   return {
     exports: {
       genToken,
       genCode,
-    }
+    },
   }
 }
-
 
 // Default options.
 const defaults: ReferOptions = {
@@ -524,15 +496,14 @@ const defaults: ReferOptions = {
 
   code: {
     len: 6,
-    alphabet: 'BCDFGHJKLMNPQRSTVWXYZ2456789'
-  }
+    alphabet: 'BCDFGHJKLMNPQRSTVWXYZ2456789',
+  },
 }
 
+Object.assign(docspider, { defaults })
 
-Object.assign(refer, { defaults })
-
-export default refer
+export default docspider
 
 if ('undefined' !== typeof module) {
-  module.exports = refer
+  module.exports = docspider
 }

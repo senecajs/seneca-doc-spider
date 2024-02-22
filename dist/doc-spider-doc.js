@@ -10,4 +10,4 @@ exports.default = docs;
 if ('undefined' !== typeof module) {
     module.exports = docs;
 }
-//# sourceMappingURL=refer-doc.js.map
+//# sourceMappingURL=docspider-doc.js.map
