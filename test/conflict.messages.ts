@@ -1,11 +1,11 @@
 export default {
   print: false,
-  pattern: 'biz:docspider',
+  pattern: 'biz:filespider',
   allow: { missing: true },
   calls: [
     {
       name: 'create-alice',
-      pattern: 'create:entry', // call { biz:docspider, create:entry, ...params }
+      pattern: 'create:entry', // call { biz:filespider, create:entry, ...params }
       params: {
         user_id: 'u01',
         kind: 'standard', // avoid using 'type', 'kind' has fewer conflicts
@@ -29,7 +29,7 @@ export default {
 
     {
       name: 'create-alice2',
-      pattern: 'create:entry', // call { biz:docspider, create:entry, ...params }
+      pattern: 'create:entry', // call { biz:filespider, create:entry, ...params }
       params: {
         user_id: 'u02',
         kind: 'standard', // avoid using 'type', 'kind' has fewer conflicts
@@ -53,7 +53,7 @@ export default {
 
     {
       name: 'create-alice3',
-      pattern: 'create:entry', // call { biz:docspider, create:entry, ...params }
+      pattern: 'create:entry', // call { biz:filespider, create:entry, ...params }
       params: {
         user_id: 'u03',
         kind: 'standard', // avoid using 'type', 'kind' has fewer conflicts
@@ -102,7 +102,7 @@ export default {
 
     // Validate that only referral from user 2 have the status accepted
     {
-      pattern: 'biz:null,role:entity,base:docspider,name:occur,cmd:list',
+      pattern: 'biz:null,role:entity,base:filespider,name:occur,cmd:list',
       params: { q: { kind: 'accept' } },
       out: [
         {
@@ -117,7 +117,7 @@ export default {
 
     // Validate that the remaining referrals have the status equal to lost
     {
-      pattern: 'biz:null,role:entity,base:docspider,name:occur,cmd:list',
+      pattern: 'biz:null,role:entity,base:filespider,name:occur,cmd:list',
       params: { q: { kind: 'lost' } },
       out: [
         {
@@ -154,7 +154,7 @@ export default {
     // try to referral a user
     {
       name: 'create-alice',
-      pattern: 'create:entry', // call { biz:docspider, create:entry, ...params }
+      pattern: 'create:entry', // call { biz:filespider, create:entry, ...params }
       params: {
         user_id: 'u05',
         kind: 'standard', // avoid using 'type', 'kind' has fewer conflicts

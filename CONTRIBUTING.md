@@ -76,4 +76,4 @@ npm run prettier
 **Or**
 
 Feel free to
-[open an Issue](https://github.com/senecajs/seneca-doc-spider/issues).
+[open an Issue](https://github.com/senecajs/seneca-file-spider/issues).

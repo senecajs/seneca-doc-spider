@@ -2,7 +2,7 @@
 
 export default {
   print: false,
-  pattern: 'biz:docspider',
+  pattern: 'biz:filespider',
   allow: { missing: true },
 
   calls: [

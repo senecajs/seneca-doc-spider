@@ -9,10 +9,10 @@ type ReferOptions = {
         alphabet?: string;
     };
 };
-declare function docspider(this: any, options: ReferOptions): {
+declare function filespider(this: any, options: ReferOptions): {
     exports: {
         genToken: any;
         genCode: any;
     };
 };
-export default docspider;
+export default filespider;

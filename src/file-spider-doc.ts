@@ -2,7 +2,7 @@
 
 const docs = {
   msgCreateEntry: {
-    desc: 'Create doc spider entry.',
+    desc: 'Create file spider entry.',
   },
 }
 

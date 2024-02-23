@@ -4,22 +4,22 @@ import Seneca from 'seneca'
 import SenecaMsgTest from 'seneca-msg-test'
 // import { Maintain } from '@seneca/maintain'
 
-import DocspiderDoc from '../src/doc-spider-doc'
-import Docspider from '../src/doc-spider'
+import FilespiderDoc from '../src/file-spider-doc'
+import Filespider from '../src/file-spider'
 
 import BasicMessages from './basic.messages'
 import ManyMessages from './many.messages'
 import ConflictMessages from './conflict.messages'
 import InviteMessages from './invite.messages'
 
-describe('docspider', () => {
+describe('filespider', () => {
   test('happy', async () => {
-    expect(DocspiderDoc).toBeDefined()
+    expect(FilespiderDoc).toBeDefined()
     const seneca = Seneca({ legacy: false })
       .test()
       .use('promisify')
       .use('entity')
-      .use(Docspider)
+      .use(Filespider)
     await seneca.ready()
   })
 
@@ -28,11 +28,11 @@ describe('docspider', () => {
       .test()
       .use('promisify')
       .use('entity')
-      .use(Docspider)
+      .use(Filespider)
     await seneca.ready()
 
-    let genToken = seneca.export('docspider/genToken')
-    let genCode = seneca.export('docspider/genCode')
+    let genToken = seneca.export('filespider/genToken')
+    let genCode = seneca.export('filespider/genCode')
 
     expect(genToken().length).toEqual(16)
     expect(genCode().length).toEqual(6)
@@ -70,7 +70,7 @@ async function makeSeneca() {
 
   await makeBasicRules(seneca)
 
-  seneca.use(Docspider)
+  seneca.use(Filespider)
 
   await makeMockActions(seneca)
 
@@ -83,8 +83,8 @@ async function makeSeneca() {
 }
 
 async function makeBasicRules(seneca: any) {
-  await seneca.entity('docspider/rule').save$({
-    ent: 'docspider/occur',
+  await seneca.entity('filespider/rule').save$({
+    ent: 'filespider/occur',
     cmd: 'save',
     where: { kind: 'create' },
     call: [
@@ -95,13 +95,13 @@ async function makeBasicRules(seneca: any) {
         subject: '`config:sender.invite.subject`',
         toaddr: '`occur:sender.invite.subject`',
         code: 'invite',
-        kind: 'docspider',
+        kind: 'filespider',
       },
     ],
   })
 
-  await seneca.entity('docspider/rule').save$({
-    ent: 'docspider/occur',
+  await seneca.entity('filespider/rule').save$({
+    ent: 'filespider/occur',
     cmd: 'save',
     where: { kind: 'accept' },
     call: [
@@ -110,19 +110,19 @@ async function makeBasicRules(seneca: any) {
         award: 'incr',
         field: 'count',
         give: 'award',
-        biz: 'docspider',
+        biz: 'filespider',
       },
     ],
   })
 
-  await seneca.entity('docspider/rule').save$({
-    ent: 'docspider/occur',
+  await seneca.entity('filespider/rule').save$({
+    ent: 'filespider/occur',
     cmd: 'save',
     where: { kind: 'lost' },
     call: [
       {
         lost: 'entry',
-        biz: 'docspider',
+        biz: 'filespider',
       },
     ],
   })

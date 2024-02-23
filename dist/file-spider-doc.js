@@ -10,4 +10,4 @@ exports.default = docs;
 if ('undefined' !== typeof module) {
     module.exports = docs;
 }
-//# sourceMappingURL=docspider-doc.js.map
+//# sourceMappingURL=filespider-doc.js.map

@@ -1,12 +1,12 @@
 "use strict";
 /* Copyright © 2022 Seneca Project Contributors, MIT License. */
 Object.defineProperty(exports, "__esModule", { value: true });
-function docspider(options) {
+function filespider(options) {
     const seneca = this;
     const genToken = this.util.Nid(options.token);
     const genCode = this.util.Nid(options.code);
     seneca
-        .fix('biz:docspider')
+        .fix('biz:filespider')
         .message('create:entry', msgCreateEntry)
         .message('accept:entry', msgAcceptEntry)
         .message('update:occur', msgUpdateOccur)
@@ -32,8 +32,8 @@ function docspider(options) {
         let kind = msg.kind || 'standard';
         let peg = msg.peg || 'none'; // app specific entry type
         let active = null == msg.active ? true : !!msg.active;
-        let EntryEnt = seneca.entity('docspider/entry');
-        let OccurEnt = seneca.entity('docspider/occur');
+        let EntryEnt = seneca.entity('filespider/entry');
+        let OccurEnt = seneca.entity('filespider/occur');
         // Check single use email referral used only once
         if ('email' === method && 'single' === mode) {
             if (null == email || '' === email) {
@@ -116,7 +116,7 @@ function docspider(options) {
                 why: 'no-token-or-code'
             };
         }
-        const entry = await seneca.entity('docspider/entry').load$(q);
+        const entry = await seneca.entity('filespider/entry').load$(q);
         if (!entry) {
             return {
                 ok: false,
@@ -133,7 +133,7 @@ function docspider(options) {
                 why: 'entry-not-active',
             };
         }
-        let occurs = await this.entity('docspider/occur').list$({
+        let occurs = await this.entity('filespider/occur').list$({
             entry_id: entry.id,
             fields$: ['kind']
         });
@@ -163,7 +163,7 @@ function docspider(options) {
         }
         let occur;
         if (!check) {
-            occur = await seneca.entity('docspider/occur').save$({
+            occur = await seneca.entity('filespider/occur').save$({
                 user_id,
                 entry_kind: entry.kind,
                 email: entry.email,
@@ -191,7 +191,7 @@ function docspider(options) {
         if (occur_id) {
             q.id = occur_id;
         }
-        let occur = await seneca.entity('docspider/occur').load$(q);
+        let occur = await seneca.entity('filespider/occur').load$(q);
         if (!occur) {
             return {
                 ok: false,
@@ -209,7 +209,7 @@ function docspider(options) {
         const seneca = this;
         let entry_id = msg.entry_id;
         let active = msg.active;
-        let entry = seneca.entity('docspider/entry').load$(entry_id);
+        let entry = seneca.entity('filespider/entry').load$(entry_id);
         if (!entry) {
             return {
                 ok: false,
@@ -228,14 +228,14 @@ function docspider(options) {
     async function msgLoadEntry(msg) {
         const seneca = this;
         let entry_id = msg.entry_id;
-        let entry = seneca.entity('docspider/entry').load$(entry_id);
+        let entry = seneca.entity('filespider/entry').load$(entry_id);
         if (!entry) {
             return {
                 ok: false,
                 why: 'not-found'
             };
         }
-        let occurs = seneca.entity('docspider/occur').list$({
+        let occurs = seneca.entity('filespider/occur').list$({
             entry_id: entry.id
         });
         return {
@@ -251,7 +251,7 @@ function docspider(options) {
         let user_id = msg.user_id;
         let kind = msg.kind || 'standard';
         let peg = msg.peg;
-        let entry = await seneca.entity('docspider/entry').load$({
+        let entry = await seneca.entity('filespider/entry').load$({
             user_id,
             kind,
             peg,
@@ -273,13 +273,13 @@ function docspider(options) {
     }
     async function msgLostEntry(msg) {
         const seneca = this;
-        const occurList = await seneca.entity('docspider/occur').list$({
+        const occurList = await seneca.entity('filespider/occur').list$({
             email: msg.email,
             kind: 'create',
         });
         const unacceptedReferrals = occurList.filter((occur) => occur.user_id !== msg.userWinner);
         for (let i = 0; i < unacceptedReferrals.length; i++) {
-            await seneca.entity('docspider/occur').save$({
+            await seneca.entity('filespider/occur').save$({
                 user_id: unacceptedReferrals[i].user_id,
                 entry_kind: unacceptedReferrals[i].entry_kind,
                 email: msg.email,
@@ -290,7 +290,7 @@ function docspider(options) {
     }
     async function msgRewardEntry(msg) {
         const seneca = this;
-        const entry = await seneca.entity('docspider/occur').load$({
+        const entry = await seneca.entity('filespider/occur').load$({
             entry_id: msg.entry_id,
         });
         if (!entry) {
@@ -299,11 +299,11 @@ function docspider(options) {
                 why: 'unknown-entry'
             };
         }
-        let reward = await this.entity('docspider/reward').load$({
+        let reward = await this.entity('filespider/reward').load$({
             entry_id: entry.id,
         });
         if (!reward) {
-            reward = seneca.make('docspider/reward', {
+            reward = seneca.make('filespider/reward', {
                 entry_id: msg.entry_id,
                 entry_kind: msg.entry_kind,
                 kind: msg.kind,
@@ -316,7 +316,7 @@ function docspider(options) {
     }
     async function msgLoadRules(msg) {
         const seneca = this;
-        const rules = await seneca.entity('docspider/rule').list$();
+        const rules = await seneca.entity('filespider/rule').list$();
         // TODO: handle rule updates?
         // TODO: create a @seneca/rule plugin? later!
         for (let rule of rules) {
@@ -358,7 +358,7 @@ function docspider(options) {
     }
     async function prepare() {
         const seneca = this;
-        await seneca.post('biz:docspider,load:rules');
+        await seneca.post('biz:filespider,load:rules');
     }
     function generateSubPat(seneca, rule) {
         const ent = seneca.entity(rule.ent);
@@ -396,9 +396,9 @@ const defaults = {
         alphabet: 'BCDFGHJKLMNPQRSTVWXYZ2456789'
     }
 };
-Object.assign(docspider, { defaults });
-exports.default = docspider;
+Object.assign(filespider, { defaults });
+exports.default = filespider;
 if ('undefined' !== typeof module) {
-    module.exports = docspider;
+    module.exports = filespider;
 }
-//# sourceMappingURL=docspider.js.map
+//# sourceMappingURL=filespider.js.map
