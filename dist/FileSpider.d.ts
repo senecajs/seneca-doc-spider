@@ -1,6 +1,7 @@
 type FilespiderOptions = {
     debug?: boolean;
-    canon: string;
+    meta: string;
+    body: string;
 };
 declare function FileSpider(this: any, options: FilespiderOptions): void;
 export default FileSpider;

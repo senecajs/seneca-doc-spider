@@ -5,7 +5,8 @@ import fs from 'fs'
 
 type FilespiderOptions = {
   debug?: boolean
-  canon: string
+  meta: string
+  body: string
 }
 
 function FileSpider(this: any, options: FilespiderOptions) {
@@ -21,38 +22,30 @@ function FileSpider(this: any, options: FilespiderOptions) {
 
     let homedir = '../../resource/handbook/'
     // const res = await fg.glob('**/*.md', { cwd: homedir })
-    const res = await fg.glob('*.md', { cwd: homedir })
+    const res = await fg.glob('*.md', { cwd: homedir, stats: true })
 
     for (let i = 0; i < res.length; i++) {
-      // Process metadata then save contents?
-      // let readStream = fs.createReadStream(homedir + res[i], 'utf8')
-      // let fileContents
-      // readStream.on('data', function (chunk) {
-      //   fileContents = chunk
-      // })
-
-      await seneca
-        .entity(options.canon)
+      let docmeta = await seneca
+        .entity(options.meta)
         .data$({
-          file: path.basename(res[i]),
-          path: res[i],
-          relpath: homedir + res[i],
-          content: fs.readFileSync(homedir + res[i], 'utf8'),
+          kind: 'file',
+          name: res[i].name,
+          path: res[i].path,
+          relpath: homedir + res[i].path,
+          size: res[i].stats?.size,
         })
         .save$()
     }
 
-    let pages = await seneca.entity(options.canon).list$()
+    let pages = await seneca.entity(options.meta).list$()
     console.log('pages:', pages)
   }
 }
 
-// Default options.
 const defaults: FilespiderOptions = {
-  // TODO: Enable debug logging
   debug: false,
-
-  canon: 'fsp/page',
+  meta: 'doc/meta',
+  body: 'doc/body',
 }
 
 Object.assign(FileSpider, { defaults })
