@@ -3,11 +3,11 @@
 Object.defineProperty(exports, "__esModule", { value: true });
 const docs = {
     msgCreateEntry: {
-        desc: 'Create referral entry.',
+        desc: 'Create file spider entry.',
     },
 };
 exports.default = docs;
 if ('undefined' !== typeof module) {
     module.exports = docs;
 }
-//# sourceMappingURL=filespider-doc.js.map
+//# sourceMappingURL=FileSpider-doc.js.map
