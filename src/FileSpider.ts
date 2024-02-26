@@ -16,6 +16,7 @@ function FileSpider(this: any, options: FilespiderOptions) {
     .fix('sys:spider,spider:file')
 
     .message('start:crawl', msgStartCrawl)
+    .message('update:doc,docid:docid', msgUpdateDoc)
 
   async function msgStartCrawl(this: any, msg: any) {
     const seneca = this
@@ -39,6 +40,18 @@ function FileSpider(this: any, options: FilespiderOptions) {
 
     let pages = await seneca.entity(options.meta).list$()
     console.log('pages:', pages)
+
+    // id$:docmeta.id
+    // await seneca.post('update:doc,docid:docid', msgUpdateDoc)
+  }
+
+  async function msgUpdateDoc(this: any, msg: any) {
+    const seneca = this
+
+    await seneca.entity(options.body).data$({ msg: msg }).save$()
+
+    let content = await seneca.entity(options.body).list$()
+    console.log('content:', content)
   }
 }
 

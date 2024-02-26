@@ -9,7 +9,8 @@ function FileSpider(options) {
     const seneca = this;
     seneca
         .fix('sys:spider,spider:file')
-        .message('start:crawl', msgStartCrawl);
+        .message('start:crawl', msgStartCrawl)
+        .message('update:doc,docid:docid', msgUpdateDoc);
     async function msgStartCrawl(msg) {
         var _a;
         const seneca = this;
@@ -30,6 +31,14 @@ function FileSpider(options) {
         }
         let pages = await seneca.entity(options.meta).list$();
         console.log('pages:', pages);
+        // id$:docmeta.id
+        // await seneca.post('update:doc,docid:docid', msgUpdateDoc)
+    }
+    async function msgUpdateDoc(msg) {
+        const seneca = this;
+        await seneca.entity(options.body).data$({ msg: msg }).save$();
+        let content = await seneca.entity(options.body).list$();
+        console.log('content:', content);
     }
 }
 const defaults = {
