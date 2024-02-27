@@ -10,7 +10,7 @@ function FileSpider(options) {
     seneca
         .fix('sys:spider,spider:file')
         .message('start:crawl', msgStartCrawl)
-        .message('update:doc,docid:docid', msgUpdateDoc);
+        .message('update:doc', msgUpdateDoc);
     async function msgStartCrawl(msg) {
         var _a;
         const seneca = this;
@@ -19,7 +19,7 @@ function FileSpider(options) {
         const res = await fast_glob_1.default.glob('*.md', { cwd: homedir, stats: true });
         for (let i = 0; i < res.length; i++) {
             let docmeta = await seneca
-                .entity(options.meta)
+                .entity(options.MetaEnt)
                 .data$({
                 kind: 'file',
                 name: res[i].name,
@@ -28,23 +28,26 @@ function FileSpider(options) {
                 size: (_a = res[i].stats) === null || _a === void 0 ? void 0 : _a.size,
             })
                 .save$();
+            // id$:docmeta.id
+            // sys:spider,spider:<kind>,update:doc,id:<doc-id>
+            // seneca.post('update:doc,id:' + docmeta.id, msgUpdateDoc)
+            seneca.post('update:doc', msgUpdateDoc);
         }
-        let pages = await seneca.entity(options.meta).list$();
+        let pages = await seneca.entity(options.MetaEnt).list$();
         console.log('pages:', pages);
-        // id$:docmeta.id
-        // await seneca.post('update:doc,docid:docid', msgUpdateDoc)
     }
     async function msgUpdateDoc(msg) {
         const seneca = this;
-        await seneca.entity(options.body).data$({ msg: msg }).save$();
-        let content = await seneca.entity(options.body).list$();
+        //let docbody = await seneca.entity('doc/body').data$({id$:docmeta.id, content:'...text...'}).save$()
+        await seneca.entity(options.BodyEnt).data$({ msg: msg }).save$();
+        let content = await seneca.entity(options.BodyEnt).list$();
         console.log('content:', content);
     }
 }
 const defaults = {
     debug: false,
-    meta: 'doc/meta',
-    body: 'doc/body',
+    MetaEnt: 'doc/meta',
+    BodyEnt: 'doc/body',
 };
 Object.assign(FileSpider, { defaults });
 exports.default = FileSpider;
