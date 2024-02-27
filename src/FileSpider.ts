@@ -3,20 +3,34 @@ import fg from 'fast-glob'
 import path from 'path'
 import fs from 'fs'
 
-type FilespiderOptions = {
+type FileSpiderOptionsFull = {
   debug?: boolean
+  canon: {
+    zone: string | undefined
+    base: string | undefined
+    name: string | undefined
+  }
   MetaEnt: string
   BodyEnt: string
 }
 
-function FileSpider(this: any, options: FilespiderOptions) {
+export type FileSpiderOptions = Partial<FileSpiderOptionsFull>
+
+function FileSpider(this: any, options: FileSpiderOptionsFull) {
   const seneca: any = this
+
+  const canon =
+    ('string' === typeof options.canon.zone ? options.canon.zone : '-') +
+    '/' +
+    ('string' === typeof options.canon.base ? options.canon.base : '-') +
+    '/' +
+    ('string' === typeof options.canon.name ? options.canon.name : '-')
 
   seneca
     .fix('sys:spider,spider:file')
 
-    .message('start:crawl', msgStartCrawl)
-    .message('update:doc', msgUpdateDoc)
+    .message('start:crawl', {}, msgStartCrawl)
+    .message('update:doc', { key: String }, msgUpdateDoc)
 
   async function msgStartCrawl(this: any, msg: any) {
     const seneca = this
@@ -50,6 +64,9 @@ function FileSpider(this: any, options: FilespiderOptions) {
   async function msgUpdateDoc(this: any, msg: any) {
     const seneca = this
 
+    const key = msg.key
+    // const entry = await seneca.entity(canon).load$(key)
+
     //let docbody = await seneca.entity('doc/body').data$({id$:docmeta.id, content:'...text...'}).save$()
     await seneca.entity(options.BodyEnt).data$({ msg: msg }).save$()
 
@@ -58,8 +75,15 @@ function FileSpider(this: any, options: FilespiderOptions) {
   }
 }
 
-const defaults: FilespiderOptions = {
+const defaults: FileSpiderOptions = {
   debug: false,
+
+  canon: {
+    zone: undefined,
+    base: 'sys',
+    name: 'spider',
+  },
+
   MetaEnt: 'doc/meta',
   BodyEnt: 'doc/body',
 }

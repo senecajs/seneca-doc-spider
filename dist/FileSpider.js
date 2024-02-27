@@ -7,10 +7,15 @@ Object.defineProperty(exports, "__esModule", { value: true });
 const fast_glob_1 = __importDefault(require("fast-glob"));
 function FileSpider(options) {
     const seneca = this;
+    const canon = ('string' === typeof options.canon.zone ? options.canon.zone : '-') +
+        '/' +
+        ('string' === typeof options.canon.base ? options.canon.base : '-') +
+        '/' +
+        ('string' === typeof options.canon.name ? options.canon.name : '-');
     seneca
         .fix('sys:spider,spider:file')
-        .message('start:crawl', msgStartCrawl)
-        .message('update:doc', msgUpdateDoc);
+        .message('start:crawl', {}, msgStartCrawl)
+        .message('update:doc', { key: String }, msgUpdateDoc);
     async function msgStartCrawl(msg) {
         var _a;
         const seneca = this;
@@ -38,6 +43,8 @@ function FileSpider(options) {
     }
     async function msgUpdateDoc(msg) {
         const seneca = this;
+        const key = msg.key;
+        // const entry = await seneca.entity(canon).load$(key)
         //let docbody = await seneca.entity('doc/body').data$({id$:docmeta.id, content:'...text...'}).save$()
         await seneca.entity(options.BodyEnt).data$({ msg: msg }).save$();
         let content = await seneca.entity(options.BodyEnt).list$();
@@ -46,6 +53,11 @@ function FileSpider(options) {
 }
 const defaults = {
     debug: false,
+    canon: {
+        zone: undefined,
+        base: 'sys',
+        name: 'spider',
+    },
     MetaEnt: 'doc/meta',
     BodyEnt: 'doc/body',
 };
