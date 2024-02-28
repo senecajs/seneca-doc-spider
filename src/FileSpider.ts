@@ -30,7 +30,7 @@ function FileSpider(this: any, options: FileSpiderOptionsFull) {
     .fix('sys:spider,spider:file')
 
     .message('start:crawl', {}, msgStartCrawl)
-    .message('update:doc', { key: String }, msgUpdateDoc)
+    .message('update:doc', { id: String }, msgUpdateDoc)
 
   async function msgStartCrawl(this: any, msg: any) {
     const seneca = this
@@ -51,10 +51,7 @@ function FileSpider(this: any, options: FileSpiderOptionsFull) {
         })
         .save$()
 
-      // id$:docmeta.id
-      // sys:spider,spider:<kind>,update:doc,id:<doc-id>
-      // seneca.post('update:doc,id:' + docmeta.id, msgUpdateDoc)
-      seneca.post('update:doc', msgUpdateDoc)
+      seneca.post('sys:spider,spider:file,update:doc,id:' + docmeta.id)
     }
 
     let pages = await seneca.entity(options.MetaEnt).list$()
@@ -68,7 +65,10 @@ function FileSpider(this: any, options: FileSpiderOptionsFull) {
     // const entry = await seneca.entity(canon).load$(key)
 
     //let docbody = await seneca.entity('doc/body').data$({id$:docmeta.id, content:'...text...'}).save$()
-    await seneca.entity(options.BodyEnt).data$({ msg: msg }).save$()
+    await seneca
+      .entity(options.BodyEnt)
+      .data$({ id$: msg.id, docid: msg.id, msg: msg })
+      .save$()
 
     let content = await seneca.entity(options.BodyEnt).list$()
     console.log('content:', content)
