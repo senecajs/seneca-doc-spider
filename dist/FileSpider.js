@@ -5,6 +5,7 @@ var __importDefault = (this && this.__importDefault) || function (mod) {
 Object.defineProperty(exports, "__esModule", { value: true });
 /* Copyright © 2022 Seneca Project Contributors, MIT License. */
 const fast_glob_1 = __importDefault(require("fast-glob"));
+const fs_1 = require("fs");
 function FileSpider(options) {
     const seneca = this;
     const canon = ('string' === typeof options.canon.zone ? options.canon.zone : '-') +
@@ -35,20 +36,26 @@ function FileSpider(options) {
                 .save$();
             seneca.post('sys:spider,spider:file,update:doc,id:' + docmeta.id);
         }
-        let pages = await seneca.entity(options.MetaEnt).list$();
-        console.log('pages:', pages);
+        let meta = await seneca.entity(options.MetaEnt).list$();
+        console.log('meta:', meta);
     }
     async function msgUpdateDoc(msg) {
         const seneca = this;
-        const key = msg.key;
-        // const entry = await seneca.entity(canon).load$(key)
-        //let docbody = await seneca.entity('doc/body').data$({id$:docmeta.id, content:'...text...'}).save$()
-        await seneca
-            .entity(options.BodyEnt)
-            .data$({ id$: msg.id, docid: msg.id, msg: msg })
-            .save$();
-        let content = await seneca.entity(options.BodyEnt).list$();
-        console.log('content:', content);
+        const docid = msg.id;
+        const docmeta = await seneca.entity(options.MetaEnt).load$(docid);
+        console.log('docmeta', docmeta);
+        (0, fs_1.readFile)(docmeta.relpath, 'utf8', (err, data) => {
+            if (err)
+                throw err;
+            seneca
+                .entity(options.BodyEnt)
+                .data$({ id$: msg.id, content: data })
+                .save$();
+        });
+        // Timeout and log for development purposes only
+        await new Promise((resolve) => setTimeout(resolve, 1111));
+        let body = await seneca.entity(options.BodyEnt).list$();
+        console.log('body:', body);
     }
 }
 const defaults = {
