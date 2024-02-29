@@ -1,12 +1,15 @@
 type FileSpiderOptionsFull = {
     debug?: boolean;
-    canon: {
+    metaCanon: {
         zone: string | undefined;
         base: string | undefined;
         name: string | undefined;
     };
-    MetaEnt: string;
-    BodyEnt: string;
+    bodyCanon: {
+        zone: string | undefined;
+        base: string | undefined;
+        name: string | undefined;
+    };
 };
 export type FileSpiderOptions = Partial<FileSpiderOptionsFull>;
 declare function FileSpider(this: any, options: FileSpiderOptionsFull): void;
