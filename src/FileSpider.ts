@@ -36,7 +36,7 @@ function FileSpider(this: any, options: FileSpiderOptionsFull) {
     metaCanon = await canonBuilder(options.metaCanon)
 
     let homedir = '../../resource/handbook/'
-    // const res = await fg.glob('**/*.md', { cwd: homedir })
+    // const res = await fg.glob('**/*.md', { cwd: homedir, stats: true })
     const res = await fg.glob('*.md', { cwd: homedir, stats: true })
 
     for (let i = 0; i < res.length; i++) {
@@ -77,18 +77,18 @@ function FileSpider(this: any, options: FileSpiderOptionsFull) {
     let body = await seneca.entity(bodyCanon).list$()
     console.log('body:', body)
   }
+}
 
-  // Utility function inside or outside of FileSpider?
-  async function canonBuilder(canon: any) {
-    let builtCanon =
-      ('string' === typeof canon.zone ? canon.zone : '-') +
-      '/' +
-      ('string' === typeof canon.base ? canon.base : '-') +
-      '/' +
-      ('string' === typeof canon.name ? canon.name : '-')
-    console.log('builtCanon:', builtCanon)
-    return builtCanon
-  }
+// Utility function inside or outside of FileSpider?
+async function canonBuilder(canon: any) {
+  let builtCanon =
+    ('string' === typeof canon.zone ? canon.zone : '-') +
+    '/' +
+    ('string' === typeof canon.base ? canon.base : '-') +
+    '/' +
+    ('string' === typeof canon.name ? canon.name : '-')
+  console.log('builtCanon:', builtCanon)
+  return builtCanon
 }
 
 const defaults: FileSpiderOptions = {
