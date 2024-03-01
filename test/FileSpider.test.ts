@@ -2,11 +2,11 @@
 
 import Seneca from 'seneca'
 
-import FilespiderDoc from '../src/FileSpider-doc'
+import FilespiderDoc from '../src/FileSpiderDoc'
 import Filespider from '../src/FileSpider'
 
 describe('filespider', () => {
-  test('happy', async () => {
+  test('load-plugin', async () => {
     expect(FilespiderDoc).toBeDefined()
     const seneca = Seneca({ legacy: false })
       .test()
@@ -16,8 +16,12 @@ describe('filespider', () => {
     await seneca.ready()
   })
 
-  test('file-spider', async () => {
+  test('basic', async () => {
     const seneca = makeSeneca()
+
+    const res0 = await seneca.post('sys:spider,spider:file,start:crawl')
+    console.log('res0:', res0)
+    // expect(res0).toMatchObject({})
   })
 })
 
@@ -27,12 +31,6 @@ async function makeSeneca() {
     .use('promisify')
     .use('entity')
     .use('entity-util', { when: { active: true } })
-
-  seneca.use(Filespider)
-
-  await seneca.ready()
-
-  console.log(seneca.list())
-
+    .use(Filespider)
   return seneca
 }
