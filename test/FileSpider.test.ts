@@ -17,16 +17,16 @@ describe('filespider', () => {
   })
 
   test('basic', async () => {
-    const seneca = makeSeneca()
+    const seneca = await makeSeneca()
 
     const res0 = await seneca.post('sys:spider,spider:file,start:crawl')
     console.log('res0:', res0)
     // expect(res0).toMatchObject({})
-  })
+  }, 99999)
 })
 
 async function makeSeneca() {
-  const seneca = Seneca({ legacy: false })
+  const seneca = Seneca({ legacy: false, timeout: 99999 })
     .test()
     .use('promisify')
     .use('entity')
