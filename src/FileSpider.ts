@@ -18,6 +18,7 @@ type FileSpiderOptionsFull = {
 
 export type FileSpiderOptions = Partial<FileSpiderOptionsFull>
 
+// TODO: Generated IDs containing exponents causing problems for saving body - see Issue #3 on GitHub
 function FileSpider(this: any, options: FileSpiderOptionsFull) {
   const seneca: any = this
 
@@ -28,7 +29,7 @@ function FileSpider(this: any, options: FileSpiderOptionsFull) {
     .fix('sys:spider,spider:file')
 
     .message('start:crawl', {}, msgStartCrawl)
-    .message('update:doc', { id: String }, msgUpdateDoc)
+    .message('update:doc', {}, msgUpdateDoc)
 
   async function msgStartCrawl(this: any, msg: any) {
     const seneca = this
@@ -36,11 +37,11 @@ function FileSpider(this: any, options: FileSpiderOptionsFull) {
     metaCanon = await canonBuilder(options.metaCanon)
 
     let homedir = '../../resource/handbook/'
-    // const res = await fg.glob('**/*.md', { cwd: homedir, stats: true })
-    const res = await fg.glob('*.md', { cwd: homedir, stats: true })
+    const res = await fg.glob('**/*.md', { cwd: homedir, stats: true })
+    // Non-recursive glob for testing purposes
+    // const res = await fg.glob('*.md', { cwd: homedir, stats: true })
 
     for (let i = 0; i < res.length; i++) {
-      // sys:entity,cmd:save,base:doc,name:meta,ent:{kind:_,path:_}
       let docmeta = await seneca
         .entity(metaCanon)
         .data$({
@@ -52,19 +53,33 @@ function FileSpider(this: any, options: FileSpiderOptionsFull) {
         })
         .save$()
 
-      await seneca.post('sys:spider,spider:file,update:doc,id:' + docmeta.id)
+      let stringid: String = docmeta.id
+
+      // console.log('docmeta:', docmeta)
+      // console.log('docmeta.id:', docmeta.id)
+      // console.log('stringid:', stringid)
+
+      if (docmeta)
+        await seneca.post('sys:spider,spider:file,update:doc,id:' + stringid)
     }
 
-    let meta = await seneca.entity(metaCanon).list$()
-    console.log('meta:', meta)
+    // let meta = await seneca.entity(metaCanon).list$()
+    // console.log('meta:', meta)
   }
 
   async function msgUpdateDoc(this: any, msg: any) {
     const seneca = this
 
+    // console.log('msg:', msg)
+    let stringid: String = msg.id.toString()
+
     bodyCanon = await canonBuilder(options.bodyCanon)
 
-    const docmeta = await seneca.entity(metaCanon).load$(msg.id)
+    const docmeta = await seneca.entity(metaCanon).load$(stringid)
+    // console.log('msg.id:', msg.id)
+    // console.log('stringid:', stringid)
+    // console.log('docmeta load', docmeta)
+    // console.log('docmeta.relpath', docmeta.relpath)
 
     readFile(docmeta.relpath, 'utf8', (err, data) => {
       if (err) throw err
@@ -73,9 +88,9 @@ function FileSpider(this: any, options: FileSpiderOptionsFull) {
     })
 
     // Timeout and log for development purposes only
-    await new Promise((resolve) => setTimeout(resolve, 1111))
-    let body = await seneca.entity(bodyCanon).list$()
-    console.log('body:', body)
+    // await new Promise((resolve) => setTimeout(resolve, 1111))
+    // let body = await seneca.entity(bodyCanon).list$()
+    // console.log('body:', body)
   }
 }
 
@@ -87,7 +102,6 @@ async function canonBuilder(canon: any) {
     ('string' === typeof canon.base ? canon.base : '-') +
     '/' +
     ('string' === typeof canon.name ? canon.name : '-')
-  console.log('builtCanon:', builtCanon)
   return builtCanon
 }
 
