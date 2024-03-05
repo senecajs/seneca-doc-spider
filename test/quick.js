@@ -4,7 +4,7 @@ const FileSpider = require('../dist/FileSpider')
 run()
 
 async function run() {
-  const seneca = await Seneca({ legacy: false })
+  const seneca = await Seneca({ legacy: false, timeout: 99999 })
     .test('print')
     .use('promisify')
     .use('entity')
