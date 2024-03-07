@@ -1,8 +1,13 @@
 /* Copyright © 2022 Seneca Project Contributors, MIT License. */
 
 const docs = {
-  msgCreateEntry: {
-    desc: 'Create referral entry.',
+  messages: {
+    msgStartCrawl: {
+      desc: 'Start crawl and save meta data.',
+    },
+    msgUpdateDoc: {
+      desc: 'Save body data under meta data id.',
+    },
   },
 }
 
