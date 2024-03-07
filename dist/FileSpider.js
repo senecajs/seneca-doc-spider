@@ -34,12 +34,10 @@ function FileSpider(options) {
                 size: (_a = res[i].stats) === null || _a === void 0 ? void 0 : _a.size,
             })
                 .save$();
-            let stringid = docmeta.id;
             // console.log('docmeta:', docmeta)
             // console.log('docmeta.id:', docmeta.id)
-            // console.log('stringid:', stringid)
             if (docmeta)
-                await seneca.post('sys:spider,spider:file,update:doc,id:' + stringid);
+                await seneca.post('sys:spider,spider:file,update:doc', { id: docmeta.id });
         }
         // let meta = await seneca.entity(metaCanon).list$()
         // console.log('meta:', meta)
@@ -47,11 +45,9 @@ function FileSpider(options) {
     async function msgUpdateDoc(msg) {
         const seneca = this;
         // console.log('msg:', msg)
-        let stringid = msg.id.toString();
         bodyCanon = await canonBuilder(options.bodyCanon);
-        const docmeta = await seneca.entity(metaCanon).load$(stringid);
+        const docmeta = await seneca.entity(metaCanon).load$(msg.id);
         // console.log('msg.id:', msg.id)
-        // console.log('stringid:', stringid)
         // console.log('docmeta load', docmeta)
         // console.log('docmeta.relpath', docmeta.relpath)
         (0, fs_1.readFile)(docmeta.relpath, 'utf8', (err, data) => {
